@@ -1,7 +1,7 @@
 # 0x00. AirBnB clone - The console
 
 # Welcome to the AirBnB clone project!
-=pic
+![Screenshot (5)](https://github.com/stanly08/AirBnB_clone/assets/140260812/9fa211f3-5442-43fc-b3e7-2d5be32c11a7)
 
 For this project, we expect you to look at these concepts:
 
@@ -55,12 +55,10 @@ $ echo "python3 -m unittest discover tests" | bash
 # More Info
 ## Execution
 Your shell should work like this in interactive mode:
-=pic
-
+![Screenshot (6)](https://github.com/stanly08/AirBnB_clone/assets/140260812/f3cfb559-ed4d-4a29-a8ce-e23f931048cd)
 
 But also in non-interactive mode: (like the Shell project in C)
-=pic
-
+![Screenshot (7)](https://github.com/stanly08/AirBnB_clone/assets/140260812/ec95f70f-3674-47c7-b72a-9ce34ccd77a5)
 
 All tests should also pass in non-interactive mode: $ echo "python3 -m unittest discover tests" | bash
-=pic
+![Screenshot (8)](https://github.com/stanly08/AirBnB_clone/assets/140260812/54c868e1-1afe-43cc-b44f-70b1fc2587ce)
