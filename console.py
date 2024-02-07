@@ -8,10 +8,9 @@ class HBNBCommand(cmd.Cmd):
 
     prompt = "(hbnb) "
 
-    def help_quit(self,line):
-        """help commandline"""
+    def help_quit(self):
+        """help command for quit"""
         print("Quit the console")
-        return self.do_EOF
 
     def do_quit(self, arg):
         """Quit command to exit the program."""
