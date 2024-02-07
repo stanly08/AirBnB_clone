@@ -2,6 +2,8 @@
 """basemodel is defined at this point"""
 
 import uuid
+import models
+from models import storage
 from datetime import datetime, date, time
 
 class BaseModel:
@@ -17,6 +19,11 @@ class BaseModel:
         obj_dict = self.__dict__.copy()
         obj_dict['__class__'] = self.__class__.__name__
         obj_dict['created_at'] = self.created_at.isoformart()
+
+     def save(self):
+        """Update updated_at with the current datetime."""
+        self.updated_at = datetime.now()
+        models.storage.save()
 
     def __str__(self):
         class_name = self.__class__.__name__
