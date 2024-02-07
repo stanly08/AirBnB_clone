@@ -30,7 +30,7 @@ class Filestorage:
             with open(self.__file_path, "w") as file:
                 serialized_object = json.load(file)
             for key, obj in self.__objects.items():
-        except (FileNotFoundError) as fnf_error:
+        except (FileNotFoundError) as error:
             print("No data file found, starting from scratch.")
             return self.__objects
 
