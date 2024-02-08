@@ -1,10 +1,15 @@
 #!/usr/bin/python3
 """Module for HBNB command interpreter."""
 import cmd
+import re
 from models.base_model import BaseModel
 from models import storage
 from models.user import User
-
+from models.state import State
+from models.city import City
+from models.amenity import Amenity
+from models.place import Place
+from models.review import Review
 
 class HBNBCommand(cmd.Cmd):
     """Command interpreter class."""
@@ -28,6 +33,26 @@ class HBNBCommand(cmd.Cmd):
         """Do nothing when an empty line is entered."""
         pass
 
+    def default(self, arg):
+        """Default behavior for console  when input is invalid"""
+        argdict = {
+            "all": self.do_all,
+            "show": self.do_show,
+            "destroy": self.do_destroy,
+            "update": self.do_update
+        }
+        match = re.search(r"\.", arg)
+        if match is not None:
+            argl = [arg[:match.span()[0]], arg[match.span()[1]:]]
+            match = re.search(r"\((.*?)\)", argl[1])
+            if match is not None:
+                command = [argl[1][:match.span()[0]], match.group()[1:-1]]
+                if command[0] in argdict.keys():
+                    call = "{} {}".format(argl[0], command[1])
+                    return argdict[command[0]](call)
+        print("*** Unknown syntax: {}".format(arg))
+        return False
+
     def do_create(self, arg):
         """Creates a new instance of BaseModel, saves it (to the JSON file)
         and prints the id. Ex: $ create BaseModel"""
@@ -48,7 +73,7 @@ class HBNBCommand(cmd.Cmd):
         if not arg:
             print("** class name missing **")
             return
-        if args[0] not in ["BaseModel", "User"]:
+        if args[0] not in ["BaseModel", "User", "State", "City", "Amenity", "Place", "Review"]:
             print("** class doesn't exist **")
             return
         if len(args) < 2:
@@ -68,7 +93,7 @@ class HBNBCommand(cmd.Cmd):
         if not arg:
             print("** class name missing **")
             return
-        if args[0] not in ["BaseModel", "User"]:
+        if args[0] not in ["BaseModel", "User", "State", "City", "Amenity", "Place", "Review"]:
             print("** class doesn't exist **")
             return
         if len(args) < 2:
@@ -84,15 +109,13 @@ class HBNBCommand(cmd.Cmd):
 
     def do_all(self, arg):
         """Prints all string representation of all instances
-        based or not on the class name. Ex: $ all BaseModel or $ all"""
-        args = arg.split()
-        if not arg:
-            print([str(obj) for obj in storage.all().values()])
-            return
-        if args[0] not in ["BaseModel", "User"]:
+        based on the class name. Ex: $ all BaseModel"""
+        try:
+            cls = eval(arg)
+            objs = storage.all(cls)
+            print([str(obj) for obj in objs.values()])
+        except NameError:
             print("** class doesn't exist **")
-            return
-        print([str(obj) for key, obj in storage.all().items() if key.startswith(args[0])])
 
     def do_update(self, arg):
         """Updates an instance based on the class name and id
@@ -102,7 +125,7 @@ class HBNBCommand(cmd.Cmd):
         if not arg:
             print("** class name missing **")
             return
-        if args[0] not in ["BaseModel", "User"]:
+        if args[0] not in ["BaseModel", "User", "State", "City", "Amenity", "Place", "Review"]:
             print("** class doesn't exist **")
             return
         if len(args) < 2:
