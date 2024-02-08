@@ -3,6 +3,7 @@
 import cmd
 from models.base_model import BaseModel
 from models import storage
+from models.user import User
 
 
 class HBNBCommand(cmd.Cmd):
@@ -47,7 +48,7 @@ class HBNBCommand(cmd.Cmd):
         if not arg:
             print("** class name missing **")
             return
-        if args[0] not in ["BaseModel"]:
+        if args[0] not in ["BaseModel", "User"]:
             print("** class doesn't exist **")
             return
         if len(args) < 2:
@@ -67,7 +68,7 @@ class HBNBCommand(cmd.Cmd):
         if not arg:
             print("** class name missing **")
             return
-        if args[0] not in ["BaseModel"]:
+        if args[0] not in ["BaseModel", "User"]:
             print("** class doesn't exist **")
             return
         if len(args) < 2:
@@ -88,7 +89,7 @@ class HBNBCommand(cmd.Cmd):
         if not arg:
             print([str(obj) for obj in storage.all().values()])
             return
-        if args[0] not in ["BaseModel"]:
+        if args[0] not in ["BaseModel", "User"]:
             print("** class doesn't exist **")
             return
         print([str(obj) for key, obj in storage.all().items() if key.startswith(args[0])])
@@ -101,7 +102,7 @@ class HBNBCommand(cmd.Cmd):
         if not arg:
             print("** class name missing **")
             return
-        if args[0] not in ["BaseModel"]:
+        if args[0] not in ["BaseModel", "User"]:
             print("** class doesn't exist **")
             return
         if len(args) < 2:
