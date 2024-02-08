@@ -2,12 +2,10 @@
 """basemodel is defined at this point"""
 
 import uuid
-import models
-from models import storage
-from datetime import datetime, date, time
+from datetime import datetime
 
 class BaseModel:
-    """BaseModel for creationg and managing files"""
+    """BaseModel for creating and managing files"""
 
     def __init__(self, *args, **kwargs):
         """initialize a new instance of BaseModel"""
@@ -16,23 +14,28 @@ class BaseModel:
         self.updated_at = datetime.now()
 
     def to_dict(self):
+        """Return dictionary representation of BaseModel instance"""
         obj_dict = self.__dict__.copy()
         obj_dict['__class__'] = self.__class__.__name__
-        obj_dict['created_at'] = self.created_at.isoformart()
+        obj_dict['created_at'] = self.created_at.isoformat()  # Serialize datetime to ISO 8601 format
+        obj_dict['updated_at'] = self.updated_at.isoformat()  # Serialize datetime to ISO 8601 format
+        return obj_dict
 
-     def save(self):
+    def save(self):
         """Update updated_at with the current datetime."""
         self.updated_at = datetime.now()
-        models.storage.save()
+        from models import storage
+        storage.new(self)
+        storage.save()
 
     def __str__(self):
+        """Return string representation of BaseModel instance"""
         class_name = self.__class__.__name__
-
         return "[{}] [{}] {}".format(class_name, self.id, self.__dict__)
 
-user = BaseModel()
-
-print(user.id)
-print(user.created_at)
-print(user.updated_at)
+if __name__ == "__main__":
+    user = BaseModel()
+    print(user.id)
+    print(user.created_at)
+    print(user.updated_at)
 

@@ -1,36 +1,48 @@
-#!/usr/bin/python3
 """FileStorage model is defined here"""
 import json
+import os
 from models.base_model import BaseModel
-from models import storage
+from datetime import datetime
 
-class Filestorage:
+class FileStorage:
+    """Class for serializing and deserializing instances to and from JSON file."""
+
     __file_path = "file.json"
     __objects = {}
 
     def new(self, obj):
-        """Add a file to the FileStorage."""
-        key = "{}.{}".format(obj.__class__.__name__, id(obj))
+        """Add a new object to the __objects dictionary."""
+        key = "{}.{}".format(obj.__class__.__name__, obj.id)
         self.__objects[key] = obj
 
     def save(self):
-        """serialize"""
-        serialized_object = {}
+        """Serialize __objects to JSON and save to file."""
+        serialized_objects = {}
         for key, obj in self.__objects.items():
-            serialized_object[key] = obj.to_dict()
+            serialized_objects[key] = obj.to_dict()
         with open(self.__file_path, "w") as file:
-            json.dump(serialized_object, file)
+            json.dump(serialized_objects, file)
+
+    def reload(self):
+        """Deserialize JSON file to __objects dictionary."""
+        try:
+            with open(self.__file_path, "r") as file:
+                # Check if the file is empty
+                if os.path.getsize(self.__file_path) == 0:
+                    return
+                serialized_objects = json.load(file)
+                # Check if the loaded data is a dictionary
+                if not isinstance(serialized_objects, dict):
+                    return
+                for key, value in serialized_objects.items():
+                    class_name, obj_id = key.split('.')
+                    value['created_at'] = datetime.strptime(value['created_at'], "%Y-%m-%dT%H:%M:%S.%f")
+                    value['updated_at'] = datetime.strptime(value['updated_at'], "%Y-%m-%dT%H:%M:%S.%f")
+                    self.__objects[key] = BaseModel(**value)
+        except FileNotFoundError:
+            pass
 
     def all(self):
+        """Return the dictionary of all objects."""
         return self.__objects
-    
-    def reload(self):
-        """Deserialize the JSON file __file_path to __objects, if it only exists."""
-        try:
-            with open(self.__file_path, "w") as file:
-                serialized_object = json.load(file)
-            for key, obj in self.__objects.items():
-        except (FileNotFoundError) as error:
-            print("No data file found, starting from scratch.")
-            return self.__objects
 
