@@ -12,11 +12,11 @@ class User(BaseModel):
         last_name (str): The last name of the user.
     """
 
-    def __init__(self, email="", password="", first_name="", last_name=""):
+    def __init__(self, *args, **kwargs):
         """Initialize User attributes."""
-        super().__init__()
-        self.email = email
-        self.password = password
-        self.first_name = first_name
-        self.last_name = last_name
+        super().__init__(*args, **kwargs)
+        self.email = kwargs.get('email', '')
+        self.password = kwargs.get('password', '')
+        self.first_name = kwargs.get('first_name', '')
+        self.last_name = kwargs.get('last_name', '')
 

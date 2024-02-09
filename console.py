@@ -39,7 +39,8 @@ class HBNBCommand(cmd.Cmd):
             "all": self.do_all,
             "show": self.do_show,
             "destroy": self.do_destroy,
-            "update": self.do_update
+            "update": self.do_update,
+            "count": self.do_count
         }
         match = re.search(r"\.", arg)
         if match is not None:
@@ -148,6 +149,15 @@ class HBNBCommand(cmd.Cmd):
         except AttributeError:
             print("** no instance found **")
             return
+
+    def do_count(self, arg):
+        """Counts the number of instances of a class."""
+        try:
+            cls = eval(arg)
+            count = len(storage.all(cls))
+            print(count)
+        except NameError:
+            print("** class doesn't exist **")
 
 
 if __name__ == '__main__':

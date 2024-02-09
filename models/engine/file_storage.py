@@ -58,7 +58,7 @@ class FileStorage:
                     elif class_name == "Review":
                         self.__objects[key] = Review(**value)
                     elif class_name == "User":
-                        self.__objects[key] = User(email=value['email'], password=value['password'], first_name=value['first_name'], last_name=value['last_name'])
+                        self.__objects[key] = User(**value)
         except FileNotFoundError:
             pass
 
@@ -68,10 +68,10 @@ class FileStorage:
         If no class name is provided, returns all objects.
         """
         if cls is None:
-            return FileStorage.__objects
+            return self.__objects
 
         filtered_objects = {}
-        for key, obj in FileStorage.__objects.items():
+        for key, obj in self.__objects.items():
             if key.split('.')[0] == cls.__name__:
                 filtered_objects[key] = obj
         return filtered_objects
