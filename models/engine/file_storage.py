@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """FileStorage model is defined here"""
 import json
+import cmd
 import os
 from models.base_model import BaseModel
 from models.place import Place
@@ -75,4 +76,39 @@ class FileStorage:
             if key.split('.')[0] == cls.__name__:
                 filtered_objects[key] = obj
         return filtered_objects
+
+     def do_update(self, line):
+
+        args = line.split()
+        if len(args) == 0:
+            print("class name missing")
+            return
+        class_name = args[0]
+        if class_name not in ["BaseModel", "User", "State", "City", "Place","Review", "Amenity"]:
+            print("class doesn't exist")
+            return
+        if len(args) < 2:
+            print("instance id missing")
+            return
+        obj_id = args[1]
+        key = "{}.{}".format(class_name, obj_id)
+        all_objs = storage.all()
+        if key not in all_objs:
+            print("no instance found")
+            return
+        if len(args) < 3:
+            print("attribute name missing")
+            return
+        attribute = args[2]
+        if len(args) < 4:
+            print("value missing")
+            return
+        value = args[3]
+        try:
+            value = eval(value)
+        except:
+            pass
+        obj = all_objs[key]
+        setattr(obj, attribute, value)
+        obj.save()
 
