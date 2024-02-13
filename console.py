@@ -16,65 +16,22 @@ class HBNBCommand(cmd.Cmd):
 
     prompt = "(hbnb) "
 
-    def do_create(self, line):
-        """Creates a new instance of BaseModel, saves it (to the JSON file)
-        and prints the id. Ex: $ create BaseModel"""
-        args = line.split()
-        if len(args) == 2:
-            digit, name = args
-            self.users[digit] = name
-            print(f"user created - ID {digit} : {name}")
-        else:
-            print("invalid input Use: create <digit> <name>")
-            return True
+    def help_quit(self):
+        """help command for quit"""
+        print("Quit command to exit the program")
 
+    def do_quit(self, arg):
+        """Quit command to exit the program."""
+        return True
 
-    def do_show(self, line):
-        """Prints the string representation of an instance
-        based on the class name and id. Ex: $ show BaseModel 1234-1234-1234"""
-        print("list of users")
-        for digit, name in self.users.items():
-            print(f'ID:{digit}, Name:{name}')
+    def do_EOF(self, arg):
+        """Handles EOF signal to exit the program."""
+        print()
+        return True
 
-    def do_update(self, line):
-        """updates users name"""
-        args = line.split()
-        if len(args) == 2:
-            digit, name = args
-            if digit in self.users:
-                self.users[digit] = name
-                print(f"user updated - ID {digit} : {name}")
-            else:
-                print(f"no user found with ID: {digit} name: {name}")
-        else:
-                print(f"Invalid command. Please use update <id:digit> <new name>.")
-
-    def do_destroy(self, line):
-        """deletes a user"""
-        if line in self.users:
-            del self.users[line]
-            print(f"deleted user {line}")
-        else:
-            print(f"no user ID like: {line}")
-
-    def do_all(self, arg):
-        """Prints all string representation of all instances
-        based on the class name. Ex: $ all BaseModel"""
-        try:
-            cls = eval(arg)
-            objs = storage.all(cls)
-            print([str(obj) for obj in objs.values()])
-        except NameError:
-            print("** class doesn't exist **")
-
-    def do_count(self, arg):
-        """Counts the number of instances of a class."""
-        try:
-            cls = eval(arg)
-            count = len(storage.all(cls))
-            print(count)
-        except NameError:
-            print("** class doesn't exist **")
+    def emptyline(self):
+        """Do nothing when an empty line is entered."""
+        pass
 
     def default(self, arg):
         """Default behavior for console  when input is invalid"""
@@ -94,27 +51,117 @@ class HBNBCommand(cmd.Cmd):
                 if command[0] in argdict.keys():
                     call = "{} {}".format(argl[0], command[1])
                     return argdict[command[0]](call)
-        print("*** Unknown syntax: {}".format(arg))
+        print("Unknown syntax: {}".format(arg))
         return False
 
+    def do_create(self, arg):
+        """Creates a new instance of BaseModel, saves it (to the JSON file)
+        and prints the id. Ex: $ create BaseModel"""
+        if not arg:
+            print("class name missing")
+            return
+        try:
+            new_instance = eval(arg)()
+            new_instance.save()
+            print(new_instance.id)
+        except NameError:
+            print("class doesn't exist")
 
+    def do_show(self, arg):
+        """Prints the string representation of an instance
+        based on the class name and id. Ex: $ show BaseModel 1234-1234-1234"""
+        args = arg.split()
+        if not arg:
+            print("class name missing")
+            return
+        if args[0] not in ["BaseModel", "User", "State", "City", "Amenity", "Place", "Review"]:
+            print("class doesn't exist")
+            return
+        if len(args) < 2:
+            print("instance id missing")
+            return
+        key = "{}.{}".format(args[0], args[1])
+        objects = storage.all()
+        if key not in objects:
+            print("no instance found")
+        else:
+            print(objects[key])
 
-    def help_quit(self):
-        """help command for quit"""
-        print("Quit the console")
+    def do_destroy(self, arg):
+        """Deletes an instance based on the class name and id
+        (save the change into the JSON file). Ex: $ destroy BaseModel 1234-1234-1234"""
+        args = arg.split()
+        if not arg:
+            print("class name missing")
+            return
+        if args[0] not in ["BaseModel", "User", "State", "City", "Amenity", "Place", "Review"]:
+            print("class doesn't exist")
+            return
+        if len(args) < 2:
+            print("instance id missing")
+            return
+        key = "{}.{}".format(args[0], args[1])
+        objects = storage.all()
+        if key not in objects:
+            print("no instance found")
+        else:
+            del objects[key]
+            storage.save()
 
-    def do_quit(self, arg):
-        """Quit command to exit the program."""
-        return True
+    def do_all(self, arg):
+        """Prints all string representation of all instances
+        based on the class name. Ex: $ all BaseModel"""
+        try:
+            cls = eval(arg)
+            objs = storage.all(cls)
+            print([str(obj) for obj in objs.values()])
+        except NameError:
+            print("class doesn't exist")
 
-    def do_EOF(self, arg):
-        """Handles EOF signal to exit the program."""
-        print()
-        return True
+    def do_update(self, line):
+        """Usage: update <class name> <id> <dictionary representation>
+        Updates an instance based on the class name and id with a dictionary representation"""
 
-    def emptyline(self):
-        """Do nothing when an empty line is entered."""
-        pass
+        args = line.split()
+        if len(args) == 0:
+            print("class name is missing")
+            return
+        class_name = args[0]
+        if class_name not in ["BaseModel", "User", "State", "City", "Place",
+                             "Review", "Amenity"]:
+            print("class doesn't exist")
+            return
+        if len(args) < 2:
+            print("instance id missing")
+            return
+        obj_id = args[1]
+        key = "{}.{}".format(class_name, obj_id)
+        all_objs = storage.all()
+        if key not in all_objs:
+            print("no instance found")
+            return
+        if len(args) < 3:
+            print("dictionary representation missing")
+            return
+        try:
+            updates = json.loads(' '.join(args[2:]))
+        except ValueError:
+            print("invalid dictionary representation")
+            return
+
+        obj = all_objs[key]
+        for key, value in updates.items():
+            setattr(obj, key, value)
+        obj.save()
+
+    def do_count(self, arg):
+        """Counts the number of instances of a class."""
+        try:
+            cls = eval(arg)
+            count = len(storage.all(cls))
+            print(count)
+        except NameError:
+            print("class doesn't exist")
 
 
 if __name__ == '__main__':
