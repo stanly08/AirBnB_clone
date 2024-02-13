@@ -54,5 +54,14 @@ class TestHBNBCommand_prompting(unittest.TestCase):
                 self.assertIn("** no instance found **", f_destroy.getvalue())
 
 
+class TestConsole(unittest.TestCase):
+
+    def test_help_show_command(self):
+        with patch('sys.stdout', new=StringIO()) as f:
+            HBNBCommand().onecmd("help show")
+            output = f.getvalue().strip()
+            self.assertIn("Show instances based on class name", output)
+
+
 if __name__ == '__main__':
     unittest.main()
