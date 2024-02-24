@@ -1,13 +1,16 @@
-footer {
+header {
     background-color: white;
-    color: white; /* Add this line */
-    height: 60px;
+    height: 70px;
     width: 100%;
-    border-top: 1px solid #CCCCCC;
-    position: fixed;
+    border-bottom: 1px solid #CCCCCC;
     display: flex;
-    justify-content: center;
     align-items: center;
-    bottom: 0;
+}
+
+header .logo {
+    width: 142px;
+    height: 60px;
+    background: url("../images/logo.png") no-repeat center;
+    padding-left: 20px;
 }
 
